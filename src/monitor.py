@@ -9,6 +9,8 @@ It calculates and logs one-minute averages of environmental readings.
 
 from orangepi_dht22 import DHT22Reader, GPIOHandler
 from pyA20.gpio import port
+from pathlib import Path
+import sys
 import time
 import logging
 

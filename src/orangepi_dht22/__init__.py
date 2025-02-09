@@ -11,4 +11,4 @@ from .dht22_reader import DHT22Reader
 from .gpio_handler import GPIOHandler
 
 __version__ = '1.0.0'
-__all__ = ['DHT', 'DHTResult', 'DHT22Reader', 'GPIOHandler']
+__all__ = ['DHT22Reader', 'GPIOHandler']

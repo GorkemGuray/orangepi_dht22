@@ -1,4 +1,4 @@
-from src.orangepi_dht22.dht import DHT, DHTResult
+from .dht import DHT, DHTResult
 import time
 from collections import deque
 from statistics import mean
