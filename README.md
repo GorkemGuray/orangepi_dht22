@@ -1,14 +1,28 @@
-# Orange Pi Zero DHT22 Sıcaklık ve Nem Sensörü
+# Orange Pi Zero DHT22 Ortam İzleme Sistemi
 
-Bu proje, Orange Pi Zero üzerinde DHT22 sıcaklık ve nem sensörünü kullanarak ölçüm yapmanızı sağlar.
+Bu proje, Orange Pi Zero ve DHT22 sensörü kullanarak bir ortamın sıcaklık ve nem değerlerini sürekli izlemeyi ve dakikalık ortalama değerler sunmayı amaçlar.
 
-## Gereksinimler
+## Proje Amacı ve Özellikleri
 
-### Donanım
+### Ana Özellikler
+- Ortam sıcaklık ve nem değerlerinin dakikalık ortalamasını ölçme
+- Anlık değişimlerden etkilenmeyen kararlı ölçüm
+- Hata toleranslı veri toplama
+- Otomatik veri düzeltme ve filtreleme
+
+### Çalışma Prensibi
+- Sensörden saniyede bir veri okunur
+- Son 60 saniyenin verileri saklanır
+- Her dakika başında ortalama değerler hesaplanır
+- Anlık değişimler ve okuma hataları filtrelenir
+
+## Donanım Gereksinimleri
+
+### Gerekli Bileşenler
 - Orange Pi Zero
-- DHT22 (AM2302) sensör
+- DHT22 (AM2302) sıcaklık ve nem sensörü
 - 3.3V güç kaynağı (Orange Pi'den sağlanıyor)
-- 4.7K - 10K pull-up direnci (opsiyonel, kod içinde yazılımsal pull-up kullanılıyor)
+- 4.7K - 10K pull-up direnci (opsiyonel)
 
 ### Bağlantı Şeması
 ```
@@ -19,11 +33,14 @@ DATA (pin 2) ->  PA6 (default)
 GND (pin 4)  ->  GND
 ```
 
-### Yazılım Gereksinimleri
-- Python 3.7+
-- pyA20 kütüphanesi
+## Yazılım Kurulumu
 
-## Kurulum
+### Ön Gereksinimler
+- Python 3.7 veya üzeri
+- pip3
+- venv modülü
+
+### Kurulum Adımları
 
 1. Projeyi klonlayın:
 ```bash
@@ -44,45 +61,58 @@ pip3 install -r requirements.txt
 
 ## Kullanım
 
-1. Programı çalıştırın:
+### Programı Çalıştırma
 ```bash
 sudo $(which python3) src/example.py
 ```
 
-2. Çıktı örneği:
+### Örnek Çıktı
 ```
-2024-01-01 12:00:01 - INFO - Sıcaklık: 25.6°C, Nem: 45.2%
+2024-01-01 12:00:00 - INFO - 1 Dakikalık Ortalama - Sıcaklık: 25.6°C, Nem: 45.2%
+2024-01-01 12:01:00 - INFO - 1 Dakikalık Ortalama - Sıcaklık: 25.7°C, Nem: 45.3%
 ```
 
-## Özellikler
-- DHT22 sensör desteği (DHT11 için de uyumlu)
-- Otomatik hata yakalama ve yeniden deneme mekanizması
-- Detaylı loglama
-- GPIO pin temizleme
-- Modüler yapı
+### Veri Yorumlama
+- Her satır bir dakikalık ortalama değeri gösterir
+- Değerler son 60 saniyenin ortalamasıdır
+- Anlık değişimler ve gürültüler filtrelenmiştir
+- Hata durumlarında son geçerli değerler kullanılır
 
-## Pin Değiştirme
-Varsayılan olarak PA6 pini kullanılmaktadır. Farklı bir pin kullanmak için `example.py` dosyasındaki `PIN` değişkenini değiştirin:
+## Yapılandırma
 
+### Örnek Yapılandırma Parametreleri
 ```python
-PIN = port.PA6  # Başka bir pin için değiştirin, örn: port.PA7
+dht22_reader = DHT22Reader(
+    gpio_pin=PIN,
+    max_retries=2,     # Okuma başarısız olursa deneme sayısı
+    retry_delay=0.1,   # Denemeler arası bekleme süresi
+    cache_time=1       # Önbellek süresi (saniye)
+)
 ```
+
+### Zaman Aralıkları
+- Veri okuma sıklığı: 1 saniye
+- Ortalama hesaplama süresi: 60 saniye
+- Önbellek yenileme süresi: 1 saniye
 
 ## Sorun Giderme
 
-### Sık Karşılaşılan Hatalar
+### Sık Karşılaşılan Sorunlar
 
-1. "Permission denied" hatası:
-   - Programı `sudo` ile çalıştırın
-
-2. "No module named 'pyA20'" hatası:
-   - Virtual environment'ın aktif olduğundan emin olun
-   - requirements.txt dosyasındaki kütüphaneleri yükleyin
-
-3. Sensör okuma hataları:
+1. Veri Okunamıyor:
    - Kablo bağlantılarını kontrol edin
-   - Pull-up direncinin bağlı olduğundan emin olun
-   - Sensör ve Orange Pi arasındaki mesafenin çok uzun olmadığından emin olun
+   - Sensör güç kaynağını kontrol edin
+   - GPIO pin numarasını doğrulayın
+
+2. Yüksek Hata Oranı:
+   - Kablo uzunluğunu kontrol edin
+   - Elektromanyetik girişim kaynaklarını uzaklaştırın
+   - Pull-up direnci kullanmayı deneyin
+
+3. Tutarsız Değerler:
+   - Havalandırmayı kontrol edin
+   - Sensörü direkt güneş ışığından koruyun
+   - Sensörü ısı kaynaklarından uzak tutun
 
 ## Krediler
 
@@ -93,10 +123,3 @@ Bu proje aşağıdaki açık kaynak projeleri temel almaktadır:
 
 ## Lisans
 MIT License
-
-## Katkıda Bulunma
-1. Bu depoyu fork edin
-2. Yeni bir branch oluşturun (`git checkout -b feature/yeniOzellik`)
-3. Değişikliklerinizi commit edin (`git commit -am 'Yeni özellik: Açıklama'`)
-4. Branch'inizi push edin (`git push origin feature/yeniOzellik`)
-5. Pull Request oluşturun
