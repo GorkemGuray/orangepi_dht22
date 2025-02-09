@@ -1,10 +1,17 @@
-from dht22_reader import DHT22Reader
-from gpio_handler import GPIOHandler
+#!/usr/bin/env python3
+"""
+DHT22 Environment Monitor
+
+This module provides continuous monitoring of temperature and humidity
+using a DHT22 sensor connected to an Orange Pi Zero.
+It calculates and logs one-minute averages of environmental readings.
+"""
+
+from orangepi_dht22 import DHT22Reader, GPIOHandler
 from pyA20.gpio import port
 import time
 import logging
 
-# Logging konfigürasyonu
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s'
@@ -50,7 +57,7 @@ def main():
                     time.sleep(sleep_time)
                 
             except RuntimeError as e:
-                logging.debug(f"Okuma hatası: {str(e)}")  # Debug seviyesine düşürdük
+                logging.debug(f"Okuma hatası: {str(e)}")
                 time.sleep(0.5)
             except Exception as e:
                 logging.error(f"Beklenmeyen hata: {str(e)}")

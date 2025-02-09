@@ -1,6 +1,6 @@
 # Orange Pi Zero DHT22 Ortam İzleme Sistemi
 
-Bu proje, Orange Pi Zero ve DHT22 sensörü kullanarak bir ortamın sıcaklık ve nem değerlerini sürekli izlemeyi ve dakikalık ortalama değerler sunmayı amaçlar.
+Bu proje, Orange Pi Zero (H2+) ve DHT22 sensörü kullanarak bir ortamın sıcaklık ve nem değerlerini sürekli izlemeyi ve dakikalık ortalama değerler sunmayı amaçlar.
 
 ## Proje Amacı ve Özellikleri
 
@@ -19,8 +19,8 @@ Bu proje, Orange Pi Zero ve DHT22 sensörü kullanarak bir ortamın sıcaklık v
 ## Donanım Gereksinimleri
 
 ### Gerekli Bileşenler
-- Orange Pi Zero
-- DHT22 (AM2302) sıcaklık ve nem sensörü
+- Orange Pi Zero (h2+)
+- DHT22 (AM2301) sıcaklık ve nem sensörü
 - 3.3V güç kaynağı (Orange Pi'den sağlanıyor)
 - 4.7K - 10K pull-up direnci (opsiyonel)
 
@@ -44,7 +44,7 @@ GND (pin 4)  ->  GND
 
 1. Projeyi klonlayın:
 ```bash
-git clone https://github.com/kullanici_adi/orangepi_dht22.git
+git clone https://github.com/GorkemGuray/orangepi_dht22.git
 cd orangepi_dht22
 ```
 
@@ -59,11 +59,29 @@ source .venv/bin/activate
 pip3 install -r requirements.txt
 ```
 
+### Paket Olarak Kurulum
+
+Projeyi bir Python paketi olarak kurmak için:
+
+```bash
+pip install -e .
+```
+
+Bu kurulum sonrasında `dht22_monitor` komutu ile programı doğrudan çalıştırabilirsiniz:
+
+```bash
+sudo dht22_monitor
+```
+
 ## Kullanım
 
 ### Programı Çalıştırma
 ```bash
-sudo $(which python3) src/example.py
+# Doğrudan script olarak
+sudo $(which python3) src/monitor.py
+
+# veya paket kurulumu yapıldıysa
+sudo dht22_monitor
 ```
 
 ### Örnek Çıktı
@@ -77,6 +95,12 @@ sudo $(which python3) src/example.py
 - Değerler son 60 saniyenin ortalamasıdır
 - Anlık değişimler ve gürültüler filtrelenmiştir
 - Hata durumlarında son geçerli değerler kullanılır
+
+### Veri Güvenilirliği
+- Sensör okuma hataları durumunda son geçerli değer kullanılır
+- Önbellek sistemi ile gereksiz okumalar engellenir
+- Deque veri yapısı ile verimli hafıza kullanımı sağlanır
+- İstatistiksel hesaplamalar ile gürültü filtrelenir
 
 ## Yapılandırma
 
