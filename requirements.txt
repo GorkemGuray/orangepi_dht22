@@ -1,0 +1,1 @@
+pyA20 @ git+https://github.com/LinhDNguyen/orangepi_zero_gpio@1bb13a6bfaa13c05efc5bd1dd685ecda14b95358
