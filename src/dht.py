@@ -1,3 +1,13 @@
+"""
+This module is adapted from https://github.com/jingl3s/DHT11-DHT22-Python-library-Orange-PI
+Original work by jingl3s, modified for this project.
+
+Modifications:
+- Updated GPIO handling for pyA20 library
+- Added error handling improvements
+- Code formatting and documentation updates
+"""
+
 import time
 from pyA20.gpio import gpio
 
