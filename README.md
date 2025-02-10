@@ -39,6 +39,7 @@ GND (pin 4)  ->  GND
 - Python 3.7 veya üzeri
 - pip3
 - venv modülü
+- MQTT broker hesabı (HiveMQ Cloud önerilir)
 
 ### Kurulum Adımları
 
@@ -59,6 +60,19 @@ source .venv/bin/activate
 pip3 install -r requirements.txt
 ```
 
+4. Yapılandırma dosyasını oluşturun:
+```bash
+cp .env.example .env
+```
+
+5. `.env` dosyasını MQTT bilgilerinizle güncelleyin:
+```properties
+MQTT_BROKER=your.broker.address
+MQTT_PORT=8883
+MQTT_USERNAME=your_username
+MQTT_PASSWORD=your_password
+```
+
 ### Paket Olarak Kurulum
 
 Projeyi bir Python paketi olarak kurmak için:
@@ -74,6 +88,47 @@ sudo dht22_monitor
 ```
 
 ## Kullanım
+
+### MQTT Entegrasyonu
+- Veriler MQTT broker'a dakikalık olarak gönderilir
+- Veri iletimi için QoS 1 kullanılır (en az bir kez iletim garantisi)
+- SSL/TLS ile güvenli bağlantı kullanılır
+- Her cihaz için benzersiz client ID kullanılır
+- Cihaz durumu (online/offline) otomatik olarak izlenir
+
+#### MQTT Topic Yapısı
+- Sıcaklık verileri: `sensors/dht22/temperature`
+- Nem verileri: `sensors/dht22/humidity`
+- Cihaz durumu: `sensors/dht22/status`
+
+#### Örnek MQTT Mesajları
+```json
+// Temperature topic (sensors/dht22/temperature)
+{
+    "value": 25.6,
+    "unit": "C",
+    "timestamp": "2024-01-01T12:00:00Z"
+}
+
+// Humidity topic (sensors/dht22/humidity)
+{
+    "value": 45.2,
+    "unit": "%",
+    "timestamp": "2024-01-01T12:00:00Z"
+}
+
+// Status topic (sensors/dht22/status)
+{
+    "status": "online",
+    "timestamp": "2024-01-01T12:00:00Z"
+}
+```
+
+#### Cihaz Durumu İzleme
+- Program başladığında "online" mesajı yayınlanır
+- Program normal kapatıldığında veya çöktüğünde "offline" mesajı yayınlanır
+- Status mesajları `retain` flag'i ile saklanır
+- Beklenmeyen bağlantı kopmaları otomatik olarak yeniden bağlanır
 
 ### Programı Çalıştırma
 ```bash
@@ -137,6 +192,31 @@ dht22_reader = DHT22Reader(
    - Havalandırmayı kontrol edin
    - Sensörü direkt güneş ışığından koruyun
    - Sensörü ısı kaynaklarından uzak tutun
+
+4. MQTT Bağlantı Sorunları:
+   - `.env` dosyasındaki broker bilgilerini kontrol edin
+   - Bağlantı hatası kodlarını kontrol edin:
+     * 1: Protokol versiyonu uyumsuzluğu
+     * 2: Geçersiz client identifier
+     * 3: Broker kullanılamıyor
+     * 4: Hatalı kullanıcı adı veya şifre
+     * 5: Yetkilendirme hatası
+   - SSL/TLS sertifikalarının güncel olduğunu kontrol edin
+   - Internet bağlantınızı kontrol edin
+   - Broker'ın aktif olduğunu kontrol edin
+
+### Yapılandırma Detayları
+
+#### MQTT Yapılandırması
+`.env` dosyası aşağıdaki formatta olmalıdır:
+```properties
+MQTT_BROKER=your.broker.address
+MQTT_PORT=8883
+MQTT_USERNAME=your_username
+MQTT_PASSWORD=your_password
+```
+
+Not: Port 8883, SSL/TLS kullanılan MQTT bağlantıları için standart porttur.
 
 ## Krediler
 

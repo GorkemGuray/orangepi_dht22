@@ -6,7 +6,8 @@ setup(
     packages=find_packages(where="src"),
     package_dir={"": "src"},
     install_requires=[
-        # gerekli bağımlılıkları buraya ekleyin
+        "paho-mqtt>=1.6.1",
+        "python-dotenv>=0.19.0"
     ],
     entry_points={
         'console_scripts': [
